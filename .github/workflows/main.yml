@@ -1,25 +1,27 @@
-name: githubaction
+name: Build Docker Image
 
 on:
-    push :
-      branches :
-         - main
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-
-
-jobs :
-  example-job:
+jobs:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: print a welcome message
-        run: echo "Welcome to our second GitHub Workflow!"
-      
-      
-      - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+    - name: Checkout code
+      uses: actions/checkout@v4
 
+    - name: Build Docker image
+      run: |
+        docker build -t lebyaa:latest .
         
-      - name: list repository file
-        run: ls -la 
-
+    - name: Test Docker image
+      run: |
+        docker run --name test-container -d lebyaa:latest
+        sleep 10
+        docker ps
+        docker stop test-container
+        docker rm test-container
